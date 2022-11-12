@@ -1,0 +1,104 @@
+from tkinter import *   #for GUI
+from tkinter import ttk
+import random           #for choosing random values
+
+#start of GUI
+root = Tk()
+
+root.title("Rock, paper, scicssors - by Christopher Hatton")
+root.geometry("600x130")
+root.resizable(False,False)
+root.configure(bg='lightblue')
+root.bind("<Return>", lambda event: f_submit())
+
+#score is a list. When the user wins, an arbitrary character is appended to the list. The score is the length of the list
+score = []
+
+def f_proceed():
+    #get user input and make it lower case:
+    proceed = entry.get()
+    proceed = proceed.lower()
+    #if user wants to continue, redirect the submit button to f_submit and change the text to represent this:
+    if proceed == "continue":
+        entry.delete(0, END)
+        submit.configure(command = lambda: f_submit())
+        root.bind("<Return>", lambda event: f_submit())
+        text.configure(text = "Rock, paper, scissors:")
+    #if user wants to exit, close the app:
+    elif proceed == "exit":
+        root.destroy()
+    #if invalid input:
+    else:
+        text.configure(text = 'Type "continue" to continue or "exit" to exit.')
+
+def f_play(user_input, move):
+    outcome = ""
+    root.bind("<Return>", lambda event: f_proceed())
+    #if draw:
+    if (user_input == "rock" and move == "rock") or (user_input == "paper" and move == "paper") or (user_input == "scissors" and move == "scissors"):
+        outcome = "draw"
+    #if user wins:
+    if (user_input == "rock" and move == "scissors") or (user_input == "paper" and move == "rock") or (user_input == "scissors" and move == "paper"):
+        outcome = "win"
+    #if user loses:
+    if (user_input == "rock" and move == "paper") or (user_input == "paper" and move == "scissors") or (user_input == "scissors" and move == "rock"):
+        outcome = "lose"
+    #output result, ask user if tbey want to continue and redirects the submit button to f_proceed:
+    if outcome == "win":
+        text.configure(text = 'You have won. Type "continue" to continue or "exit" to exit')
+        submit.configure(command = lambda: f_proceed())
+        #updates the score:
+        score.append(" ")
+        score_display.configure(text = "Score: " + str(len(score)))
+    elif outcome == "lose":
+        text.configure(text = 'You have lost. Type "continue" to continue or "exit" to exit')
+        submit.configure(command = lambda: f_proceed())
+    elif outcome == "draw":
+        text.configure(text = 'It was a draw. Type "continue" to continue or "exit" to exit')    
+        submit.configure(command = lambda: f_proceed())
+
+def f_submit():
+    #gets user input and makes it all lower case:
+    user_input = entry.get()
+    user_input = user_input.lower()
+    #gets a random move
+    moves = ["rock","paper","scissors"]
+    move = moves[random.randint(1,3) - 1]
+    #checks that the user entered a valid move:
+    valid = False
+    for i in range(3):
+        if user_input == moves[i]:
+            valid = True
+            break
+    #if user input is invalid: tell user to enter valid move
+    if valid == False:
+        text.configure(text = 'Only enter "rock", "paper", or "scissors"')
+    #if user input is valid, carry out the function f_play
+    elif valid == True:
+        entry.delete(0, END)
+        f_play(user_input, move)
+
+"""
+text is a Label, displaying output information. It is displayed at the top of the GUI
+
+entry is an Entry box, for the user to input information. It is positioned
+between text and submit
+
+submit is a Button that is linked to the function f_submit. It is positioned
+between submit and score_display
+
+score_display displays the score variable. It is at the bottom of the GUI.
+"""
+
+text = ttk.Label(text = "Rock, paper, scissors: ", background = "lightblue", foreground = "darkred", font = "Helvetica 16")
+entry = ttk.Entry()
+submit = ttk.Button(text = "Submit", command = lambda: f_submit())
+score_display = ttk.Label(text = "Score: " + str(len(score)), background = "lightblue",foreground = "darkred", font = "Helvetica 16")
+
+text.place(relx=0.5, rely=0.125, anchor=CENTER)
+entry.place(relx=0.5, rely=0.35, anchor=CENTER)
+submit.place(relx=0.5, rely=0.6125, anchor=CENTER)
+score_display.place(relx=0.5, rely=0.85, anchor=CENTER)
+
+#end of GUI
+root.mainloop()
